@@ -31,3 +31,23 @@ print(df.info())
 print("\nFirst 5 rows of data:")
 print(df.head(10))
 
+#remove dupes from the data and store the cleaned data as "cleaned_gas_data.csv"
+duplicates = df[df.duplicated(keep=False)]
+
+if not duplicates.empty:
+    print(f"\nFound {len(duplicates)} duplicate rows. Removing...")
+    df_cleaned = df.drop_duplicates()
+    
+    print(f"Original row count: {len(df)}")
+    print(f"Cleaned row count:  {len(df_cleaned)}")
+    print(f"Removed:            {len(duplicates)}")
+    
+    # Save cleaned data
+    df_cleaned.to_csv("cleaned_gas_data.csv", index=False)
+    print("Cleaned data saved to cleaned_gas_data.csv")
+else:
+    print("\nNo duplicates found.")
+    df.to_csv("cleaned_gas_data.csv", index=False)
+    print("Saved original data to cleaned_gas_data.csv")
+
+#
