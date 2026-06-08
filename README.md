@@ -10,8 +10,32 @@ pip install pandas scikit-learn xgboost matplotlib seaborn
 
 ## Run
 
+### Ingest & clean data
+
 ```bash
-python main.py         # loads DB, prints summary stats
+python src/ingest_clean.py
+```
+
+Reads from `data/gas_monitoring.db`, cleans and exports `gas_monitoring_cleaned.csv`.
+
+### Train models
+
+```bash
+python "ML model.py"
+```
+
+### Evaluate models
+
+```bash
+python src/evaluate_savedModel.py
+```
+
+Loads saved models from `Saved_models/` and prints F1 macro scores plus classification reports.
+
+### EDA
+
+```bash
+jupyter notebook EDA.ipynb
 ```
 
 ### Docker
@@ -35,9 +59,19 @@ SQLite database (`data/gas_monitoring.db`) with the following sensor columns:
 
 **Target**: `Activity Level` (Low / Moderate / High)
 
-## ML Output
+## Project Structure
 
-Pre-generated plots in `plots/` show classification results using Logistic Regression, Random Forest, and XGBoost.
+```
+EGT309/
+  ML model.py                  # Training pipeline
+  EDA.ipynb                    # Exploratory data analysis
+  src/
+    ingest_clean.py             # Data ingestion & cleaning
+    evaluate_savedModel.py      # Model evaluation script
+  Saved_models/                 # Trained model artifacts
+  data/
+    gas_monitoring.db           # SQLite database
+```
 
 ## License
 

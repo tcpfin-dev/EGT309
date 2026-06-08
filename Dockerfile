@@ -9,7 +9,9 @@ RUN pip install --no-cache-dir \
     matplotlib \
     seaborn
 
-COPY main.py .
+COPY ["ML model.py", "."]
+COPY src/ src/
 COPY data/ data/
+COPY Saved_models/ Saved_models/
 
-CMD ["python", "main.py"]
+CMD python src/ingest_clean.py && python src/evaluate_savedModel.py
