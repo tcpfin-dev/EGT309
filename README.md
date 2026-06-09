@@ -96,9 +96,9 @@ EGT309/
 
 | Model | F1 Macro |
 |---|---|
-| Random Forest | 0.78 |
-| XGBoost | 0.74 |
-| Logistic Regression | 0.55 |
+| Random Forest | 0.93 |
+| XGBoost | 0.82 |
+| Logistic Regression | 0.50 |
 
 ## License
 
@@ -207,6 +207,6 @@ The goal is to evaluate performance across model architectures.
 
 Based on the evaluation benchmarks the model performance across the three architectures is as follows:
 
-* **XGBoost & Random Forest Performance:** Tree-based ensemble architectures showed an ability to capture complex relationships across sensor inputs (F1 macro 0.74–0.78).
+* **XGBoost & Random Forest Performance:** Tree-based ensemble architectures showed an ability to capture complex relationships across sensor inputs (F1 macro 0.82–0.93).
 
-* **Logistic Regression Limitations:** The linear baseline model struggled to resolve overlapping classes achieving lower overall precision and recall metrics (F1 macro 0.55). This performance gap highlights that changes in indoor **Activity Level** relate to factors in a non-linear way.
+* **Logistic Regression Limitations:** The linear baseline model struggled to resolve overlapping classes achieving lower overall precision and recall metrics (F1 macro 0.50). This performance gap highlights that changes in indoor **Activity Level** relate to factors in a non-linear way.
