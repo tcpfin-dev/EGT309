@@ -34,7 +34,7 @@ for col in numeric_to_impute:
 
 # Ambient Light Level is text data — fill missing parts with the most common value (mode)
 df_clean["Ambient Light Level"] = df_clean["Ambient Light Level"].fillna(
-    df_clean["Ambient Light Level"].mode()
+    df_clean["Ambient Light Level"].mode()[0]
 )
 
 # Check if there are any missing values left anywhere
