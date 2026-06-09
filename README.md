@@ -73,7 +73,6 @@ SQLite database (`data/gas_monitoring.db`) with the following sensor columns:
 
 ```
 EGT309/
-├── ML model.py                  # Legacy training script (simpler baseline)
 ├── run.sh                       # Docker build + run wrapper
 ├── EDA.ipynb                    # Exploratory data analysis
 ├── src/
