@@ -8,6 +8,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
+from imblearn.over_sampling import SMOTE
 
 # ==========================================
 # PART 1: Imports and GPU Configuration
@@ -59,6 +60,34 @@ X_encoded = X_encoded.astype(float)
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X_encoded)
 X_scaled_df = pd.DataFrame(X_scaled, columns=X_encoded.columns)
+
+# ------------------------------------------
+# SMOTE: Oversample minority classes
+# ------------------------------------------
+print("\n--- Applying SMOTE ---")
+
+# ---- Before SMOTE ----
+before_total = len(y_encoded)
+print(f"Before SMOTE: {before_total} rows total")
+before_counts = pd.Series(y_encoded).value_counts().sort_index()
+for cls_idx, count in before_counts.items():
+    cls_name = label_encoder.inverse_transform([cls_idx])[0]
+    pct = count / before_total * 100
+    print(f"  Class '{cls_name}' (encoded {cls_idx}): {count} rows ({pct:.2f}%)")
+
+# ---- Apply SMOTE ----
+smote = SMOTE(random_state=42)
+X_scaled_arr, y_encoded = smote.fit_resample(X_scaled_df, y_encoded)
+X_scaled_df = pd.DataFrame(X_scaled_arr, columns=X_encoded.columns)
+
+# ---- After SMOTE ----
+after_total = len(y_encoded)
+print(f"\nAfter SMOTE:  {after_total} rows total")
+after_counts = pd.Series(y_encoded).value_counts().sort_index()
+for cls_idx, count in after_counts.items():
+    cls_name = label_encoder.inverse_transform([cls_idx])[0]
+    pct = count / after_total * 100
+    print(f"  Class '{cls_name}' (encoded {cls_idx}): {count} rows ({pct:.2f}%)")
 
 # ==========================================
 # PART 3: Data Splitting
