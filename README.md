@@ -13,7 +13,7 @@ pip install pandas scikit-learn xgboost matplotlib seaborn
 ### Ingest & clean data
 
 ```bash
-python src/ingest_clean.py
+python devel/ingest_clean.py
 ```
 
 Reads from `data/gas_monitoring.db`, cleans and exports `gas_monitoring_cleaned.csv`.
@@ -27,7 +27,7 @@ python "ML model.py"
 ### Evaluate models
 
 ```bash
-python src/evaluate_savedModel.py
+python src/evaluation/evaluate_savedModel.py
 ```
 
 Loads saved models from `Saved_models/` and prints F1 macro scores plus classification reports.
@@ -41,8 +41,8 @@ jupyter notebook EDA.ipynb
 ### Docker
 
 ```bash
-docker build -t egt309 .
-docker run egt309
+docker build -t egt309 -f devel/Dockerfile .
+docker run --rm egt309
 ```
 
 ## Data
@@ -66,11 +66,18 @@ EGT309/
   ML model.py                  # Training pipeline
   EDA.ipynb                    # Exploratory data analysis
   src/
-    ingest_clean.py             # Data ingestion & cleaning
-    evaluate_savedModel.py      # Model evaluation script
+    cleaning/
+      DataCleaning.py           # Alternative cleaning (with SMOTE)
+    training/
+      trainModels.py            # Empty placeholder
+    evaluation/
+      evaluate_savedModel.py    # Model evaluation script
   Saved_models/                 # Trained model artifacts
   data/
     gas_monitoring.db           # SQLite database
+  devel/
+    Dockerfile                  # Docker config for clean + evaluate
+    ingest_clean.py             # Data ingestion & cleaning
 ```
 
 ## License
