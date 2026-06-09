@@ -81,7 +81,7 @@ EGT309/
 │   │   ├── DataCleaning.py      # Cleaning steps (depends on external `df`)
 │   │   └── run_clean.py         # Self-contained entry point: loads DB, exec's DataCleaning, remaps labels
 │   ├── training/
-│   │   └── trainModels.py       # Empty placeholder
+│   │   └── trainModels.py       # Advanced training pipeline (SMOTE + hyperparams, not used by Docker)
 │   └── evaluation/
 │       └── evaluate_savedModel.py  # Model evaluation script
 ├── data/
@@ -151,11 +151,13 @@ The goal is to clean the sensor artifacts, drop redundant information, resolve m
 
 * **Logic:** Unit 2 had 14% missing values and was highly collinear with `MetalOxideSensor_Unit4`. The infrared CO2 sensor outperforms the electrochemical variant.
 
-##### Step 4: Standardizing Target Formatting & Class Resampling
+##### Step 4: Standardizing Target Formatting
 
-* **Action:** Cleaned strings within the target column to yield 3 exact unique classes: `high_activity`, `moderate_activity`, and `low_activity`. Applied SMOTE to balance classes from (1070, 5669, 3090) to (5669, 5669, 5669).
+* **Action:** Cleaned strings within the target column to yield 3 exact unique classes: `high_activity`, `moderate_activity`, and `low_activity`.
 
-* **Logic:** Corrects parsing issues and prevents class imbalance bias during training.
+* **Logic:** Corrects parsing issues and ensures consistent categorical labels.
+
+**Note:** SMOTE oversampling was removed from the cleaning pipeline and relocated to `ML model.py`, where it is applied after feature scaling and before the train/test split.
 
 ### 3. End-to-End Machine Learning Pipeline
 
@@ -185,13 +187,13 @@ The goal is to evaluate performance across model architectures.
 
 1. **XGBoost Classifier**
 
-* **Objective Function:** `multi:softmax` utilizing `mlogloss` evaluation metric.
+* **Configuration:** Trained with default hyperparameters on SMOTE-balanced data.
 
 * *Logic:* Gradient boosted trees excel at capturing non-linear boundaries.
 
 2. **Random Forest Classifier**
 
-* **Configuration:** Trained directly on the 80% training split with default hyperparameters.
+* **Configuration:** Trained with default hyperparameters on SMOTE-balanced data.
 
 * *Logic:* Provides an alternative using bag-based parallel tree structures.
 
