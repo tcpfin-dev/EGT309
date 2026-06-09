@@ -4,3 +4,5 @@ __pycache__/
 *.pyo
 .DS_Store
 .crush/
+Saved_models/
+gas_monitoring_cleaned.csv

@@ -9,7 +9,7 @@ echo "Building Docker image..."
 docker build -t egt309 -f devel/Dockerfile .
 
 echo ""
-echo "Running pipeline (clean + evaluate)..."
+echo "Running pipeline (clean + train + evaluate)..."
 docker run --rm egt309
 
 echo ""
