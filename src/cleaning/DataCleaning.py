@@ -92,36 +92,3 @@ print("\nDtype after conversion:", df_clean["CO_GasSensor"].dtype)
 print("Value counts:\n", df_clean["CO_GasSensor"].value_counts())
 
 
-# --- STEP 9: BALANCE THE DATASET USING SMOTE ---
-# Make a copy of the dataframe specifically for the SMOTE process
-df_smote = df_clean.copy()
-encoders = {}
-
-# Convert all text columns into numbers because SMOTE only works with math/numbers
-for col in df_smote.select_dtypes("object").columns:
-    le = LabelEncoder()
-    df_smote[col] = le.fit_transform(df_smote[col].astype(str))
-    encoders[col] = le  # Save the encoder so we can convert numbers back to text later
-
-# Split data into features (X) and the target variable we want to balance (y)
-X = df_smote.drop(columns=["Activity Level"])
-y = df_smote["Activity Level"]
-
-# Run SMOTE to generate synthetic data for minority classes so they are all equal
-X_res, y_res = SMOTE(random_state=42).fit_resample(X, y)
-
-# Rebuild our clean dataframe using the newly balanced data arrays
-df_clean = pd.DataFrame(X_res, columns=X.columns)
-df_clean["Activity Level"] = encoders["Activity Level"].inverse_transform(y_res)
-
-# Decode the other number columns back into their original text values
-for col in encoders:
-    if col != "Activity Level":
-        df_clean[col] = encoders[col].inverse_transform(
-            df_clean[col].round().astype(int)
-        )
-
-# Print final results to show the before-and-after of balancing the data
-print("Before SMOTE:", y.value_counts().to_dict())
-print("After SMOTE: ", pd.Series(y_res).value_counts().to_dict())
-print("df_clean shape after SMOTE:", df_clean.shape)
