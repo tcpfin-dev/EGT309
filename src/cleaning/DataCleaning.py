@@ -1,7 +1,5 @@
 import numpy as np
 import pandas as pd
-from imblearn.over_sampling import SMOTE
-from sklearn.preprocessing import LabelEncoder
 
 # --- STEP 1: REMOVE DUPLICATE ROWS ---
 # Remove identical rows to avoid repeating data
