@@ -11,7 +11,7 @@ from sklearn.metrics import f1_score, classification_report
 # ==========================================
 # Resolve paths relative to the script location
 script_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(script_dir)
+project_root = os.path.dirname(os.path.dirname(script_dir))
 models_dir = os.path.join(project_root, 'Saved_models')
 csv_path = os.path.join(project_root, 'gas_monitoring_cleaned.csv')
 
