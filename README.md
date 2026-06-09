@@ -21,7 +21,7 @@ Reads from `data/gas_monitoring.db`, cleans and exports `gas_monitoring_cleaned.
 ### Train models
 
 ```bash
-python "ML model.py"
+python src/training/trainModels.py
 ```
 
 Trains XGBoost, Random Forest, and Logistic Regression. Saves artifacts to `Saved_models/`.
@@ -73,7 +73,7 @@ SQLite database (`data/gas_monitoring.db`) with the following sensor columns:
 
 ```
 EGT309/
-├── ML model.py                  # Training pipeline
+├── ML model.py                  # Legacy training script (simpler baseline)
 ├── run.sh                       # Docker build + run wrapper
 ├── EDA.ipynb                    # Exploratory data analysis
 ├── src/
@@ -81,7 +81,7 @@ EGT309/
 │   │   ├── DataCleaning.py      # Cleaning steps (depends on external `df`)
 │   │   └── run_clean.py         # Self-contained entry point: loads DB, exec's DataCleaning, remaps labels
 │   ├── training/
-│   │   └── trainModels.py       # Advanced training pipeline (SMOTE + hyperparams, not used by Docker)
+│   │   └── trainModels.py       # Training pipeline (SMOTE + hyperparameter tuning + early stopping)
 │   └── evaluation/
 │       └── evaluate_savedModel.py  # Model evaluation script
 ├── data/
@@ -94,11 +94,13 @@ EGT309/
 
 ## Model Performance
 
-| Model | F1 Macro |
-|---|---|
-| Random Forest | 0.93 |
-| XGBoost | 0.82 |
-| Logistic Regression | 0.50 |
+Evaluation on 1,966 test samples (20% holdout) after SMOTE oversampling:
+
+| Model | F1 Macro | Accuracy | Notes |
+|---|---|---|---|
+| XGBoost | 0.89 | 0.91 | Early stopping (50 rounds), `eta=0.05`, `max_depth=7` |
+| Random Forest | 0.82 | 0.84 | 1,000 estimators, `max_depth=50`, `class_weight='balanced'` |
+| Logistic Regression | 0.50 | 0.58 | Linear baseline, `class_weight='balanced'`, `max_iter=1000` |
 
 ## License
 
@@ -157,7 +159,7 @@ The goal is to clean the sensor artifacts, drop redundant information, resolve m
 
 * **Logic:** Corrects parsing issues and ensures consistent categorical labels.
 
-**Note:** SMOTE oversampling was removed from the cleaning pipeline and relocated to `ML model.py`, where it is applied after feature scaling and before the train/test split.
+**Note:** SMOTE oversampling was removed from the cleaning pipeline and relocated to `src/training/trainModels.py`, where it is applied after feature scaling and before the train/test split.
 
 ### 3. End-to-End Machine Learning Pipeline
 
@@ -187,26 +189,28 @@ The goal is to evaluate performance across model architectures.
 
 1. **XGBoost Classifier**
 
-* **Configuration:** Trained with default hyperparameters on SMOTE-balanced data.
+* **Configuration:** Trained with `xgb.train()` using DMatrix format, early stopping (50 rounds), learning rate 0.05, max depth 7, and up to 1,000 boosting rounds on SMOTE-balanced data.
 
-* *Logic:* Gradient boosted trees excel at capturing non-linear boundaries.
+* *Logic:* Gradient boosted trees excel at capturing non-linear boundaries. Early stopping prevents overfitting.
 
 2. **Random Forest Classifier**
 
-* **Configuration:** Trained with default hyperparameters on SMOTE-balanced data.
+* **Configuration:** Trained with 1,000 estimators, max depth 50, min samples per leaf 4, and `class_weight='balanced'` on SMOTE-balanced data.
 
-* *Logic:* Provides an alternative using bag-based parallel tree structures.
+* *Logic:* Provides an alternative using bag-based parallel tree structures. Tuned depth and leaf constraints reduce overfitting.
 
 3. **Logistic Regression**
 
 * **Configuration:** Trained using L2 regularized coefficients with `class_weight='balanced'` across scaled arrays.
 
-* *Logic:* Serves as a linear baseline model.
+* *Logic:* Serves as a linear baseline model. Performance gap vs. tree ensembles confirms non-linear class boundaries.
 
 ### 5. Summary of Results & Analytical Insights
 
 Based on the evaluation benchmarks the model performance across the three architectures is as follows:
 
-* **XGBoost & Random Forest Performance:** Tree-based ensemble architectures showed an ability to capture complex relationships across sensor inputs (F1 macro 0.82–0.93).
+* **XGBoost (Best):** Achieved 0.89 F1 macro and 0.91 accuracy with early stopping and hyperparameter tuning. Strong across all three classes, with "Low Activity" precision at 0.95.
 
-* **Logistic Regression Limitations:** The linear baseline model struggled to resolve overlapping classes achieving lower overall precision and recall metrics (F1 macro 0.50). This performance gap highlights that changes in indoor **Activity Level** relate to factors in a non-linear way.
+* **Random Forest:** Achieved 0.82 F1 macro and 0.84 accuracy. Performs well on "Moderate Activity" (recall 0.88) and "High Activity" (recall 0.86) but lags XGBoost on "Low Activity".
+
+* **Logistic Regression (Baseline):** Achieved 0.50 F1 macro and 0.58 accuracy. Struggles severely with "High Activity" (F1 0.28), confirming that indoor activity levels relate to sensor inputs in a highly non-linear way.

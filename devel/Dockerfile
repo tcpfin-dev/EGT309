@@ -11,6 +11,4 @@ RUN pip install --no-cache-dir \
 COPY src/ src/
 
 COPY data/ data/
-COPY ["ML model.py", "."]
-
-CMD python src/cleaning/run_clean.py && python "ML model.py" && python src/evaluation/evaluate_savedModel.py
+CMD python src/cleaning/run_clean.py && python src/training/trainModels.py && python src/evaluation/evaluate_savedModel.py
