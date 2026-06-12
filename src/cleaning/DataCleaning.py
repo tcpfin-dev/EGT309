@@ -55,7 +55,9 @@ for col in ["HVAC Operation Mode", "Activity Level"]:
         .str.replace(r"[\s\-]+", "_", regex=True)
     )
 
-# Fix specific words that got glued together (e.g., "lowactivity" -> "low_activity")
+# The regex above replaces spaces/dashes but misses labels that were already
+# glued together (e.g. "LowActivity" became "lowactivity" not "low_activity").
+# This explicit map catches those edge cases.
 act_map = {
     "lowactivity": "low_activity",
     "moderateactivity": "moderate_activity",

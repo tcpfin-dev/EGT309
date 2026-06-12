@@ -17,7 +17,9 @@ cleaning_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "DataCl
 with open(cleaning_path) as f:
     exec(f.read())
 
-# Map Activity Level labels to match the format expected by Saved_models/label_encoder.pkl
+# DataCleaning.py normalizes labels to snake_case (low_activity), but the saved
+# label_encoder.pkl expects Title Case ("Low Activity"). Without this remap,
+# evaluate_savedModel.py would fail on unseen-label errors during transform().
 label_map = {
     "low_activity": "Low Activity",
     "moderate_activity": "Moderate Activity",
